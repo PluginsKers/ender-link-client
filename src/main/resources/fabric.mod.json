@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "ender-link",
+  "version": "${version}",
+  "name": "Ender Link",
+  "description": "Open your server ender chest beside the recipe book.",
+  "authors": ["PluginsKers"],
+  "environment": "client",
+  "entrypoints": { "client": ["com.eyreland.enderlink.client.EnderLinkClient"] },
+  "mixins": ["ender-link.client.mixins.json"],
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "26.3",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}

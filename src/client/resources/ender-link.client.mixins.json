@@ -1,0 +1,7 @@
+{
+  "required": true,
+  "package": "com.eyreland.enderlink.client.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": ["RecipeBookScreenMixin"],
+  "injectors": { "defaultRequire": 1 }
+}
