@@ -41,3 +41,5 @@ java {
     toolchain.languageVersion = JavaLanguageVersion.of(25)
 }
 tasks.withType(JavaCompile).configureEach { options.release = 25 }
+
+jar { from('LICENSE') { rename { 'LICENSE_ender-link' } } }

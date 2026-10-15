@@ -27,7 +27,7 @@ public abstract class RecipeBookScreenMixin extends Screen {
     @ModifyExpressionValue(method = {"initButton", "lambda$initButton$0"}, at = @At(value = "INVOKE",
         target = "Lnet/minecraft/client/gui/screens/inventory/AbstractRecipeBookScreen;getRecipeBookButtonPosition()Lnet/minecraft/client/gui/navigation/ScreenPosition;"))
     private ScreenPosition enderlink$bookPosition(ScreenPosition position) {
-        // 给末影箱留出原按钮的位置，避免向左覆盖副手槽。
+        // Keep the chest in the original button slot to avoid covering the offhand slot.
         return (Object) this instanceof InventoryScreen ? new ScreenPosition(position.x() + 22, position.y()) : position;
     }
 
