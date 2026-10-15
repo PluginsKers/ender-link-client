@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public final class EnderLinkClientGameTest implements FabricClientGameTest {
     @Override
     public void runTest(ClientGameTestContext context) {
+        context.runOnClient(client -> client.options.menuBackgroundBlurriness().set(0));
         context.getInput().resizeWindow(1280, 720);
         try (var world = context.worldBuilder().create()) {
             context.setScreen(() -> new InventoryScreen(Minecraft.getInstance().player));
