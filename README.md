@@ -10,18 +10,18 @@ The button matches the vanilla recipe book. It is disabled while carrying an ite
 
 ## Installation
 
-Requires Minecraft 26.3, Fabric Loader 0.19.5 or newer, Fabric API, and Java 25.
-Place the mod jar in your client's `mods` folder.
+Supports Minecraft 1.21.11, 26.1, 26.1.1, 26.1.2, 26.2, and 26.3. Requires Fabric Loader 0.19.5 or newer and Fabric API.
+Download the jar matching your Minecraft version from [Releases](https://github.com/PluginsKers/ender-link-client/releases) and place it in your client's `mods` folder. Use Java 21 for 1.21.11 and Java 25 for 26.x.
 
 ## Building
 
 ```sh
 ./gradlew build compileGametestJava
-./gradlew runClientGameTest
+./gradlew :26.3:runClientGameTest
 ```
 
-Use `gradlew.bat` on Windows. Builds require JDK 25; game tests also require a display. Jars are written to `build/libs`.
-GitHub Actions builds pull requests and `main`; jars are available as workflow artifacts.
+Use `gradlew.bat` on Windows. Run Gradle with JDK 25; the Java 21 toolchain is downloaded when needed. Game tests require a display. `build` builds all versions; `:1.21.11:build` builds one. Jars are written to `versions/<minecraft>/build/libs`.
+GitHub Actions checks each supported version. Version tags publish the jars to GitHub Releases.
 
 ## License
 

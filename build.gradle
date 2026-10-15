@@ -1,10 +1,33 @@
 plugins {
-    id 'net.fabricmc.fabric-loom' version '1.16.3'
+    id 'net.fabricmc.fabric-loom' version '1.16.3' apply false
+    id 'net.fabricmc.fabric-loom-remap' version '1.16.3' apply false
 }
 
+def remapped = stonecutter.eval(stonecutter.current.version, '<26.1')
+apply plugin: remapped ? 'net.fabricmc.fabric-loom-remap' : 'net.fabricmc.fabric-loom'
+
+def minecraftVersion = stonecutter.current.version
+def javaVersion = remapped ? 21 : 25
+version = "${mod_version}+mc${minecraftVersion}"
+group = project.maven_group
 base { archivesName = 'ender-link-client' }
 
 repositories { mavenCentral() }
+
+stonecutter.replacements {
+    string(remapped) {
+        replace('GuiGraphicsExtractor', 'GuiGraphics')
+        replace('extractContents', 'renderContents')
+        replace('extractRenderState(', 'render(')
+        replace('"extractRenderState"', '"render"')
+        replace('graphics.item(', 'graphics.renderItem(')
+        replace('lambda$initButton$0', 'method_64513')
+    }
+    string(stonecutter.eval(minecraftVersion, '<26.2')) {
+        replace('client.gui.screen()', 'client.screen')
+    }
+    string(remapped) { replace('PayloadTypeRegistry.serverboundPlay()', 'PayloadTypeRegistry.playC2S()') }
+}
 
 loom {
     splitEnvironmentSourceSets()
@@ -26,20 +49,24 @@ fabricApi {
 }
 
 dependencies {
-    minecraft 'com.mojang:minecraft:26.3'
-    implementation 'net.fabricmc:fabric-loader:0.19.5'
-    implementation 'net.fabricmc.fabric-api:fabric-api:0.161.0+26.3'
+    minecraft "com.mojang:minecraft:${minecraftVersion}"
+    if (remapped) mappings loom.officialMojangMappings()
+    add(remapped ? 'modImplementation' : 'implementation', "net.fabricmc:fabric-loader:${loader_version}")
+    add(remapped ? 'modImplementation' : 'implementation', "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}")
 }
 
-processResources {
-    inputs.property 'version', project.version
-    filesMatching('fabric.mod.json') { expand 'version': project.version }
+tasks.withType(ProcessResources).configureEach {
+    inputs.properties(version: project.version, minecraft: minecraftVersion, java: javaVersion)
+    filesMatching('fabric.mod.json') {
+        expand(version: project.version, minecraft: minecraftVersion, java: javaVersion)
+    }
+    filesMatching('*.mixins.json') { expand(java: javaVersion) }
 }
 
 java {
     withSourcesJar()
-    toolchain.languageVersion = JavaLanguageVersion.of(25)
+    toolchain.languageVersion = JavaLanguageVersion.of(javaVersion)
 }
-tasks.withType(JavaCompile).configureEach { options.release = 25 }
 
-jar { from('LICENSE') { rename { 'LICENSE_ender-link' } } }
+tasks.withType(JavaCompile).configureEach { options.release = javaVersion }
+jar { from(rootProject.file('LICENSE')) { rename { 'LICENSE_ender-link' } } }
