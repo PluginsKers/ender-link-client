@@ -2,10 +2,6 @@ plugins {
     id 'net.fabricmc.fabric-loom' version '1.16.3'
 }
 
-def release = new Properties()
-file('../gradle.properties').withInputStream { release.load(it) }
-version = "${providers.gradleProperty('version').getOrElse(release.getProperty('version'))}+mc26.3"
-group = release.getProperty('group')
 base { archivesName = 'ender-link-client' }
 
 repositories { mavenCentral() }
