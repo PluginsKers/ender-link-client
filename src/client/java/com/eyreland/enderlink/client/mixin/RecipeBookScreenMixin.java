@@ -1,8 +1,7 @@
 package com.eyreland.enderlink.client.mixin;
 
 import com.eyreland.enderlink.client.EnderChestButton;
-import com.eyreland.enderlink.client.OpenEnderChest;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
@@ -25,6 +24,13 @@ public abstract class RecipeBookScreenMixin extends Screen {
 
     protected RecipeBookScreenMixin(Component title) { super(title); }
 
+    @ModifyExpressionValue(method = {"initButton", "lambda$initButton$0"}, at = @At(value = "INVOKE",
+        target = "Lnet/minecraft/client/gui/screens/inventory/AbstractRecipeBookScreen;getRecipeBookButtonPosition()Lnet/minecraft/client/gui/navigation/ScreenPosition;"))
+    private ScreenPosition enderlink$bookPosition(ScreenPosition position) {
+        // 给末影箱留出原按钮的位置，避免向左覆盖副手槽。
+        return (Object) this instanceof InventoryScreen ? new ScreenPosition(position.x() + 22, position.y()) : position;
+    }
+
     @Inject(method = "initButton", at = @At("TAIL"))
     private void enderlink$init(CallbackInfo ci) {
         if ((Object) this instanceof InventoryScreen) {
@@ -42,10 +48,8 @@ public abstract class RecipeBookScreenMixin extends Screen {
     private void enderlink$update() {
         if (enderlink$button == null) return;
         var position = getRecipeBookButtonPosition();
-        enderlink$button.setPosition(position.x() + 22, position.y());
-        enderlink$button.visible = minecraft.getConnection() != null && ClientPlayNetworking.canSend(OpenEnderChest.TYPE)
-            && !(width < 379 && recipeBookComponent.isVisible());
-        enderlink$button.active = minecraft.player != null && minecraft.player.isAlive()
-            && !minecraft.player.isSpectator() && minecraft.player.containerMenu.getCarried().isEmpty();
+        enderlink$button.setPosition(position.x(), position.y());
+        enderlink$button.visible = !(width < 379 && recipeBookComponent.isVisible());
+        enderlink$button.updateState();
     }
 }

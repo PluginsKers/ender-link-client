@@ -10,6 +10,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 public final class EnderChestButton extends Button {
+    private static final Tooltip OPEN_TOOLTIP = Tooltip.create(Component.translatable("container.enderchest"));
+    private static final Tooltip UNAVAILABLE_TOOLTIP = Tooltip.create(Component.translatable("ender-link.server_unavailable"));
     private final ItemStack icon = new ItemStack(Items.ENDER_CHEST);
 
     public EnderChestButton() {
@@ -19,7 +21,14 @@ public final class EnderChestButton extends Button {
                 ClientPlayNetworking.send(OpenEnderChest.INSTANCE);
             }
         }, DEFAULT_NARRATION);
-        setTooltip(Tooltip.create(getMessage()));
+    }
+
+    public void updateState() {
+        var client = Minecraft.getInstance();
+        boolean supported = client.getConnection() != null && ClientPlayNetworking.canSend(OpenEnderChest.TYPE);
+        active = supported && client.player != null && client.player.isAlive()
+            && !client.player.isSpectator() && client.player.containerMenu.getCarried().isEmpty();
+        setTooltip(supported ? OPEN_TOOLTIP : UNAVAILABLE_TOOLTIP);
     }
 
     @Override

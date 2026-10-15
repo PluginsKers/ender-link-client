@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.inventory.ContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.inventory.ChestMenu;
@@ -22,7 +23,14 @@ public final class EnderLinkClientGameTest implements FabricClientGameTest {
         try (var world = context.worldBuilder().create()) {
             context.setScreen(() -> new InventoryScreen(Minecraft.getInstance().player));
             context.waitTick();
-            context.runOnClient(client -> check(!button(client).visible, "Unsupported servers hide the button"));
+            context.runOnClient(client -> {
+                check(button(client).visible && !button(client).active, "Unsupported servers show a disabled button");
+                checkPosition(client);
+            });
+            clickEnderChest(context);
+            context.waitTick();
+            context.runOnClient(client -> check(client.gui.screen() instanceof InventoryScreen, "Unsupported servers cannot open a chest"));
+            context.takeScreenshot("ender-link-unavailable");
         }
         var requests = new AtomicInteger();
         ServerPlayNetworking.registerGlobalReceiver(OpenEnderChest.TYPE, (payload, connection) -> {
@@ -46,24 +54,25 @@ public final class EnderLinkClientGameTest implements FabricClientGameTest {
             context.waitTick();
             context.runOnClient(EnderLinkClientGameTest::checkPosition);
             context.takeScreenshot("ender-link-recipebook");
+            if (!context.computeOnClient(client -> recipeBook(client).isVisible())) {
+                clickBook(context);
+                context.waitTick();
+            }
             context.getInput().resizeWindow(640, 480);
             context.waitTick();
-            context.runOnClient(client -> {
-                var screen = (InventoryScreen) client.gui.screen();
-                check(button(client).visible == !((net.minecraft.client.gui.screens.recipebook.RecipeBookComponent<?>) screen.children().stream().filter(net.minecraft.client.gui.screens.recipebook.RecipeBookComponent.class::isInstance).findFirst().orElseThrow()).isVisible(), "Narrow recipe book hides inventory buttons");
-            });
+            context.runOnClient(client -> check(recipeBook(client).isVisible() && !button(client).visible, "Narrow recipe book hides inventory buttons"));
             context.getInput().resizeWindow(1280, 720);
             context.waitTick();
             context.runOnClient(client -> {
+                check(button(client).visible, "Widening the window restores the button");
+                checkPosition(client);
                 client.player.containerMenu.setCarried(new ItemStack(Items.STONE));
             });
             context.waitTick();
             context.runOnClient(client -> check(!button(client).active, "Dragging items disables opening"));
             context.runOnClient(client -> client.player.containerMenu.setCarried(ItemStack.EMPTY));
             context.waitTick();
-            double[] position = context.computeOnClient(client -> new double[] {(button(client).getX() + 10) * client.getWindow().getGuiScale(), (button(client).getY() + 9) * client.getWindow().getGuiScale()});
-            context.getInput().setCursorPos(position[0], position[1]);
-            context.getInput().pressMouse(InputConstants.MOUSE_BUTTON_LEFT);
+            clickEnderChest(context);
             context.waitFor(client -> client.gui.screen() instanceof ContainerScreen);
             world.getConnection().waitForServerboundPackets();
             context.runOnClient(client -> {
@@ -78,7 +87,7 @@ public final class EnderLinkClientGameTest implements FabricClientGameTest {
         try (var world = context.worldBuilder().create()) {
             context.setScreen(() -> new InventoryScreen(Minecraft.getInstance().player));
             context.waitTick();
-            context.runOnClient(client -> check(!button(client).visible, "Server support does not leak across connections"));
+            context.runOnClient(client -> check(button(client).visible && !button(client).active, "Server support does not leak across connections"));
         }
     }
 
@@ -90,9 +99,19 @@ public final class EnderLinkClientGameTest implements FabricClientGameTest {
         return (ImageButton) client.gui.screen().children().stream().filter(ImageButton.class::isInstance).findFirst().orElseThrow();
     }
 
+    private static RecipeBookComponent<?> recipeBook(Minecraft client) {
+        return (RecipeBookComponent<?>) client.gui.screen().children().stream().filter(RecipeBookComponent.class::isInstance).findFirst().orElseThrow();
+    }
+
     private static void checkPosition(Minecraft client) {
-        check(button(client).getX() == book(client).getX() + 22 && button(client).getY() == book(client).getY(),
-            "Ender button follows the recipe book position");
+        check(button(client).getX() + 22 == book(client).getX() && button(client).getY() == book(client).getY(),
+            "Ender button stays to the left of the recipe book");
+    }
+
+    private static void clickEnderChest(ClientGameTestContext context) {
+        double[] position = context.computeOnClient(client -> new double[] {(button(client).getX() + 10) * client.getWindow().getGuiScale(), (button(client).getY() + 9) * client.getWindow().getGuiScale()});
+        context.getInput().setCursorPos(position[0], position[1]);
+        context.getInput().pressMouse(InputConstants.MOUSE_BUTTON_LEFT);
     }
 
     private static void clickBook(ClientGameTestContext context) {
