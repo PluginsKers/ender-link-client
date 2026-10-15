@@ -39,7 +39,7 @@ public final class EnderChestButton extends Button {
         var background = Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(AtlasIds.GUI)
             .getSprite(RecipeBookComponent.RECIPE_BUTTON_SPRITES.get(active, active && isHoveredOrFocused()));
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, background, getX(), getY(), width, height);
-        // 配方书贴图包含书本，用空白处的底色覆盖内部，再绘制末影箱。
+        // Cover the baked-in book with the sprite's blank fill before drawing the chest.
         graphics.blit(background.atlasLocation(), getX() + 2, getY() + 2, getX() + 18, getY() + 16,
             background.getU(2 / 20f), background.getU(3 / 20f), background.getV(2 / 18f), background.getV(3 / 18f));
         graphics.item(icon, getX() + 2, getY() + 1);

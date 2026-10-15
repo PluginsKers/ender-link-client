@@ -5,6 +5,11 @@
   "name": "Ender Link",
   "description": "Open your server ender chest beside the recipe book.",
   "authors": ["PluginsKers"],
+  "contact": {
+    "sources": "https://github.com/PluginsKers/ender-link-client",
+    "issues": "https://github.com/PluginsKers/ender-link-client/issues"
+  },
+  "license": "MIT",
   "environment": "client",
   "entrypoints": { "client": ["com.eyreland.enderlink.client.EnderLinkClient"] },
   "mixins": ["ender-link.client.mixins.json"],
