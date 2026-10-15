@@ -50,6 +50,9 @@ public final class EnderLinkClientGameTest implements FabricClientGameTest {
             context.waitFor(client -> button(client).visible);
             context.runOnClient(EnderLinkClientGameTest::checkPosition);
             context.takeScreenshot("ender-link-inventory");
+            hoverEnderChest(context);
+            context.waitTick();
+            context.takeScreenshot("ender-link-hovered");
             clickBook(context);
             context.waitTick();
             context.runOnClient(EnderLinkClientGameTest::checkPosition);
@@ -108,9 +111,13 @@ public final class EnderLinkClientGameTest implements FabricClientGameTest {
             "Ender button stays to the left of the recipe book");
     }
 
-    private static void clickEnderChest(ClientGameTestContext context) {
+    private static void hoverEnderChest(ClientGameTestContext context) {
         double[] position = context.computeOnClient(client -> new double[] {(button(client).getX() + 10) * client.getWindow().getGuiScale(), (button(client).getY() + 9) * client.getWindow().getGuiScale()});
         context.getInput().setCursorPos(position[0], position[1]);
+    }
+
+    private static void clickEnderChest(ClientGameTestContext context) {
+        hoverEnderChest(context);
         context.getInput().pressMouse(InputConstants.MOUSE_BUTTON_LEFT);
     }
 
