@@ -1,4 +1,4 @@
-![Ender Link](artwork/banner.png)
+![Ender Link](assets/banner.png)
 
 # Ender Link
 
@@ -26,3 +26,5 @@ GitHub Actions builds pull requests and `main`; jars are available as workflow a
 ## License
 
 [MIT](LICENSE).
+
+The logo and banner use Minecraft artwork by Mojang Studios.
