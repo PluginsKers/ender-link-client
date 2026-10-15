@@ -1,3 +1,5 @@
+![Ender Link](artwork/banner.png)
+
 # Ender Link
 
 Open your ender chest from a button beside the inventory's recipe book. No ender chest item is needed.
