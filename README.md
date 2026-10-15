@@ -1,3 +1,5 @@
+![Ender Link](assets/banner.png)
+
 # Ender Link
 
 Open your ender chest from a button beside the inventory's recipe book. No ender chest item is needed.
@@ -24,3 +26,5 @@ GitHub Actions builds pull requests and `main`; jars are available as workflow a
 ## License
 
 [MIT](LICENSE).
+
+The logo and banner use Minecraft artwork by Mojang Studios.

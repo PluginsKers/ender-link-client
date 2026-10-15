@@ -10,6 +10,7 @@
     "issues": "https://github.com/PluginsKers/ender-link-client/issues"
   },
   "license": "MIT",
+  "icon": "assets/ender-link/icon.png",
   "environment": "client",
   "entrypoints": { "client": ["com.eyreland.enderlink.client.EnderLinkClient"] },
   "mixins": ["ender-link.client.mixins.json"],
