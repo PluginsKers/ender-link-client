@@ -6,3 +6,7 @@ crash-reports/
 *.log
 .idea/
 *.iml
+
+# Stonecutter
+.stonecutter/
+versions/*/src/

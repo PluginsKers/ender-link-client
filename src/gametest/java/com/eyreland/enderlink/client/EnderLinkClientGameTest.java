@@ -3,6 +3,7 @@ package com.eyreland.enderlink.client;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
+import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ImageButton;
@@ -40,12 +41,12 @@ public final class EnderLinkClientGameTest implements FabricClientGameTest {
         });
         try (var world = context.worldBuilder().create()) {
             world.getServer().runOnServer(server -> {
-                var player = world.getConnection().getServerPlayer();
+                var player = server.getPlayerList().getPlayers().getFirst();
                 player.getInventory().clearContent();
                 player.getEnderChestInventory().setItem(26, new ItemStack(Items.DIAMOND, 7));
                 player.inventoryMenu.broadcastChanges();
             });
-            world.getConnection().waitForClientboundPackets();
+            sync(context, world);
             context.setScreen(() -> new InventoryScreen(Minecraft.getInstance().player));
             context.waitFor(client -> button(client).visible);
             context.runOnClient(EnderLinkClientGameTest::checkPosition);
@@ -77,7 +78,7 @@ public final class EnderLinkClientGameTest implements FabricClientGameTest {
             context.waitTick();
             clickEnderChest(context);
             context.waitFor(client -> client.gui.screen() instanceof ContainerScreen);
-            world.getConnection().waitForServerboundPackets();
+            sync(context, world);
             context.runOnClient(client -> {
                 check(requests.get() == 1, "One click sends one request");
                 check(client.player.containerMenu.getSlot(26).getItem().getCount() == 7, "Native chest contents are synchronized");
@@ -125,6 +126,15 @@ public final class EnderLinkClientGameTest implements FabricClientGameTest {
         double[] position = context.computeOnClient(client -> new double[] {(book(client).getX() + 10) * client.getWindow().getGuiScale(), (book(client).getY() + 9) * client.getWindow().getGuiScale()});
         context.getInput().setCursorPos(position[0], position[1]);
         context.getInput().pressMouse(InputConstants.MOUSE_BUTTON_LEFT);
+    }
+
+    private static void sync(ClientGameTestContext context, TestSingleplayerContext world) {
+        //? if >=26.2 {
+        world.getConnection().waitForServerboundPackets();
+        world.getConnection().waitForClientboundPackets();
+        //?} else {
+        /*context.waitTicks(2);
+        *///?}
     }
 
     private static void check(boolean condition, String message) {
