@@ -4,7 +4,7 @@
 
 Open your ender chest from a button beside the inventory's recipe book. No ender chest item is needed.
 
-Requires the [Ender Link server plugin](https://gitea.i5res.com/eyreland/enderlink). The server owns the inventory and controls access. Without the plugin, the button stays disabled. Players without this mod can use `/enderlink`.
+Requires the [Ender Link server plugin](https://github.com/PluginsKers/enderlink). The server owns the inventory and controls access. Without the plugin, the button stays disabled. Players without this mod can use `/enderlink`.
 
 The button matches the vanilla recipe book. It is disabled while carrying an item and hidden when the recipe book covers the inventory in narrow windows.
 
