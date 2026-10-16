@@ -4,6 +4,8 @@
 
 Open your ender chest from a button beside the inventory's recipe book. No ender chest item is needed.
 
+[Watch the Ender Link demo on YouTube](https://youtu.be/auczq3Sn7IQ).
+
 ![The ender chest button beside the recipe book, with its tooltip visible](assets/screenshot.png)
 
 Requires the [Ender Link server plugin](https://github.com/PluginsKers/enderlink). The server owns the inventory and controls access. Without the plugin, the button stays disabled. Players without this mod can use `/enderlink`.
