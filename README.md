@@ -27,6 +27,14 @@ Download the jar matching your Minecraft version from [Releases](https://github.
 Use `gradlew.bat` on Windows. Run Gradle with JDK 25; the Java 21 toolchain is downloaded when needed. Game tests require a display. `build` builds all versions; `:1.21.11:build` builds one. Jars are written to `versions/<minecraft>/build/libs`.
 GitHub Actions checks each supported version. Version tags publish the jars to GitHub Releases.
 
+The 26.3 client test can also exercise a separate server running the ordinary Ender Link plugin:
+
+```sh
+./gradlew :26.3:runClientGameTest '-PenderlinkTestAddress=127.0.0.1:25763'
+```
+
+Only an explicit loopback port is accepted. Use a dedicated disposable server or an SSH forward to one, never a production server or an authenticated proxy backend. The test uses the `EnderLinkTest` player and does not supply credentials. Leave ender chest slot 0 empty or containing the matching fixture chestplate, with room in the player inventory. Once `ENDER_LINK_FIXTURE_READY` appears, use the server's `/give` command within 90 seconds to give that player exactly one enchanted diamond chestplate named `Ecosystem 26.3` with damage 7. An existing matching chestplate in the inventory or ender chest slot 0 is reused. The client deposits it in ender chest slot 0 through the real menu, then verifies withdrawal, reconnecting, and returning it to that slot. Every menu slot is compared with Minecraft's item codec, including counts and client-visible components; starter items stay unchanged. Server-private components require a separate server-side check. A failed test leaves the fixture for inspection; it does not fabricate replacement items. Existing tests remain the default when the address is omitted.
+
 ## License
 
 [MIT](LICENSE).
