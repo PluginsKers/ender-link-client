@@ -45,6 +45,15 @@ fabricApi {
         modId = 'ender-link-test'
         enableGameTests = false
         enableClientGameTests = true
+        if (minecraftVersion == '26.3' && providers.gradleProperty('enderlinkTestAddress').isPresent()) {
+            username = 'EnderLinkTest'
+        }
+    }
+}
+
+if (minecraftVersion == '26.3' && providers.gradleProperty('enderlinkTestAddress').isPresent()) {
+    loom.runs.named('clientGameTest') {
+        property('enderlink.test.address', providers.gradleProperty('enderlinkTestAddress').get())
     }
 }
 
