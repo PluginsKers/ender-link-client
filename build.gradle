@@ -18,13 +18,9 @@ stonecutter.replacements {
     string(remapped) {
         replace('GuiGraphicsExtractor', 'GuiGraphics')
         replace('extractContents', 'renderContents')
-        replace('extractRenderState(', 'render(')
         replace('"extractRenderState"', '"render"')
         replace('graphics.item(', 'graphics.renderItem(')
         replace('lambda$initButton$0', 'method_64513')
-    }
-    string(stonecutter.eval(minecraftVersion, '<26.2')) {
-        replace('client.gui.screen()', 'client.screen')
     }
     string(remapped) { replace('PayloadTypeRegistry.serverboundPlay()', 'PayloadTypeRegistry.playC2S()') }
 }
@@ -36,24 +32,6 @@ loom {
             sourceSet sourceSets.main
             sourceSet sourceSets.client
         }
-    }
-}
-
-fabricApi {
-    configureTests {
-        createSourceSet = true
-        modId = 'ender-link-test'
-        enableGameTests = false
-        enableClientGameTests = true
-        if (minecraftVersion == '26.3' && providers.gradleProperty('enderlinkTestAddress').isPresent()) {
-            username = 'EnderLinkTest'
-        }
-    }
-}
-
-if (minecraftVersion == '26.3' && providers.gradleProperty('enderlinkTestAddress').isPresent()) {
-    loom.runs.named('clientGameTest') {
-        property('enderlink.test.address', providers.gradleProperty('enderlinkTestAddress').get())
     }
 }
 
